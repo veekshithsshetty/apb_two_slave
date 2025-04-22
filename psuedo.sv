@@ -79,6 +79,7 @@ interface apb_interface (input bit PCLK, RST);
   modport mon_op_mp(clocking mon_op_cb);   // Used by monitor output
 
 endinterface
+    
 // apb_driver.sv — Driver Class
 
 class apb_driver extends uvm_driver #(apb_sequence_item);
@@ -111,6 +112,8 @@ class apb_driver extends uvm_driver #(apb_sequence_item);
   endtask
 
 endclass
+
+    
 //apb_sequence.sv — Sequence to Generate Transactions
 
 class apb_sequence extends uvm_sequence #(apb_sequence_item);
