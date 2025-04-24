@@ -1,44 +1,29 @@
-interface apb_interface(input bit PCLK, RST);
-  logic read_write;
+  interface apb_intf(input logic PCLK, input logic PRESETn);
+
+
   logic transfer;
-  logic [7:0] apb_write_paddr;
-  logic [7:0] apb_write_data;
-  logic [7:0] apb_read_paddr;
-  logic [7:0] apb_read_data_out;
+  logic READ_WRITE;
+  logic [8:0] apb_write_paddr, apb_read_paddr;
+  logic [7:0] apb_write_data, apb_read_data_out;
+  logic PSLVERR;
 
-  clocking drv_cb@(posedge PCLK);
-    default input #0 output #0;
-    input RST;
-    output read_write;
-    output transfer;
-    output apb_write_paddr;
-    output apb_write_data;
-    output apb_read_paddr;
-   endclocking
 
-  clocking mon_in_cb@(posedge CLK);
-    default input #0 output #0;
-    input RST;
-    output read_write;
-    output transfer;
-    output apb_write_paddr;
-    output apb_write_data;
-    output apb_read_paddr;
+  /*clocking cb_driver @(posedge PCLK);
+       output transfer, READ_WRITE, apb_write_paddr, apb_write_data, apb_read_paddr;
+    input apb_read_data_out, PSLVERR;
   endclocking
 
-
-  clocking mon_op_cb@(posedge CLK);
-    default input #0 output #0;
-     input read_write;
-     input transfer;
-     input apb_write_paddr;
-     input apb_write_data;
-     input apb_read_paddr;
-     input apb_read_data_out;
+   clocking cb_monitor @(posedge PCLK);
+      input transfer, READ_WRITE, apb_write_paddr, apb_write_data, apb_read_paddr;
+    input apb_read_data_out, PSLVERR;
   endclocking
 
-  modport drv_mp(clocking drv_cb);
-  modport mon_ip_mp(clocking mon_in_cb);
-  modport mon_op_mp(clocking mon_op_cb);
+  modport driver (clocking cb_driver, input PRESETn);
+  modport monitor (clocking cb_monitor, input PRESETn); */
+ /* modport dut (input transfer, READ_WRITE, apb_write_paddr, apb_write_data,
+               apb_read_paddr, output apb_read_data_out, PSLVERR, input PRESETn, PCLK);*/
 
 endinterface
+
+
+
