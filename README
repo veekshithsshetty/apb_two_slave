@@ -1,83 +1,112 @@
-## APB_Project
+# APB Project
 
-----------------------------
+---
 
-## Project Overview of APB:
-- Parallel bus operation. All the data will be captured at rising edge clock. 
-- Signal priority: 1.PRESET (active low) 2. PSEL (active high) 3. PENABLE (active high) 4. PREADY (active high) 5. PWRITE . 
-- Two slave design based on 9th bit of apb_write_paddress bit it will elect the slave1 and slave2.
-- Data width 8 bit and address width 9 bit
-- PWRITE=1 indicates write PWDATA to slave. PWRITE=0 indicates read PRDATA from slave
+## Project Overview
+
+- **Parallel bus operation**: All data is captured on the **rising edge** of the clock.
+- **Signal Priority**:
+  1. **PRESET** (active low)
+  2. **PSEL** (active high)
+  3. **PENABLE** (active high)
+  4. **PREADY** (active high)
+  5. **PWRITE**
+- **Two Slave Design**:
+  - Based on the **9th bit** of `apb_write_paddress`, the master selects **Slave1** or **Slave2**.
+- **Data Width**: 8 bits  
+- **Address Width**: 9 bits
+- **Write/Read Operation**:
+  - **PWRITE = 1** → Write `PWDATA` to slave
+  - **PWRITE = 0** → Read `PRDATA` from slave
+
+---
 
 ## Pin Diagram
-The below digram shows  apb slave with all the input and output signals
-![second_bd_upadted (2)](https://github.com/user-attachments/assets/4d81be7d-84a4-4f33-9b74-f98e70479b03)
 
-## Verification of APB_SLAVE:
+Below diagram shows the APB slave with all input and output signals:  
+![Pin Diagram](https://github.com/user-attachments/assets/4d81be7d-84a4-4f33-9b74-f98e70479b03)
 
-### Testbench :
+---
 
-- apb_sequence_item:
-  - Extends uvm_sequence_item, defines input/output variables (all inputs randomized), uses factory registration, and includes utility/field macros.
-- apb_sequence:
-  - Extends uvm_sequence, implements methods for handling sequence requests and responses. Custom subclasses for different test cases.
-- apb_sequencer:
-  - Extends uvm_sequencer, includes constructor and utility macros.
-- apb_driver:
-  - Extends uvm_driver, connects to DUT via virtual interface, drives inputs, and implements handshake with sequence.
-- apb_monitor_input:
-  - Captures data from driver, sends to apb_scoreboard.
-- apb_monitor_output:
-  - Captures DUT outputs, sends data to apb_scoreboard and apb_coverage using an analysis port.
-- apb_scoreboard:
-  - Extends uvm_scoreboard, maintains input/output queues, compares data for validation.
-- apb_coverage:
-  - Extends uvm_coverage, captures coverage metrics.
-- apb_active_agent:
-  - Combines sequencer, driver, and input monitor. Connects sequencer to driver.
-- apb_passive_agent:
-  - Contains output monitor only, for passive observation.
-- apb_environment:
-  - Combines all components, configures them, connects monitors to scoreboard and coverage.
-- apb_test:
-  - Extends uvm_test, instantiates environment, verifies component topology, and checks simulation errors.
-- apb_top:
-  - Top-level module, includes interface, clock/reset, DUT, and initiates test using run_test.
-- apb_interface:
-   - Defines signal directions and timing using clocking blocks and modports for driver and monitor.
+## Verification of APB Slave
 
-![Screenshot 2024-10-24 125531 (1)](https://github.com/user-attachments/assets/31df5542-50d1-4151-8752-db0ff9d3bf71)
+### Testbench Components
 
-## Testplan and Assertion plan
+- **apb_sequence_item**:
+  - Extends `uvm_sequence_item`
+  - Defines input/output variables (inputs randomized)
+  - Uses factory registration and utility macros
 
-   [Testplan and Assertion_check](https://mirafra2-my.sharepoint.com/:x:/g/personal/veekshith_mirafra2_onmicrosoft_com/EQ9lHgIEmoJJspysDBPWxYsBIu3jHNXXsLYQ7CRgZTZqTw?e=NKFdfw)
-##  To Run the code
+- **apb_sequence**:
+  - Extends `uvm_sequence`
+  - Handles sequence requests and responses
+  - Custom subclasses for different test cases
 
-1. To compile the code in Questa sim
-   ```bash
-   vlog <testbench.v>
+- **apb_sequencer**:
+  - Extends `uvm_sequencer`
+  - Includes constructor and utility macros
 
-2. To Simulate the code
-   ```bash
-   vsim -novopt -suppress 12110 <top module name> +UVM_TESTNAME=<test name>
+- **apb_driver**:
+  - Extends `uvm_driver`
+  - Connects to DUT via virtual interface
+  - Drives inputs and implements handshake
 
-3. To get the waveform
-   ```bash
-   add wave -position insertpoint sim:/<top module name> /<DUT instantation name>/* 
+- **apb_monitor_input**:
+  - Captures inputs driven by driver
+  - Sends data to scoreboard
 
-3. To run the code
-   ```bash
-   run -all
+- **apb_monitor_output**:
+  - Captures DUT outputs
+  - Sends outputs to scoreboard and coverage
 
-## To Run Functional Coverage
-  ```bash
-vlib work
-vlog -sv +acc +cover +fcover -l apb_top.log apb_top.sv 
-vsim -vopt work.apb_top +UVM_TESTNAME=apb_regression_test -voptargs=+acc=npr -assertdebug -l simulation.log -coverage -c -do "coverage save -onexit -assert -directive -cvg -codeAll coverage.ucdb; run -all; coverage report -detail; exit"
-vcover report -html coverage.ucdb -htmldir covReport -details
-cd covReport 
-firefox index.html
+- **apb_scoreboard**:
+  - Extends `uvm_scoreboard`
+  - Compares input/output for validation
 
-  
+- **apb_coverage**:
+  - Extends `uvm_coverage`
+  - Captures coverage metrics
 
+- **apb_active_agent**:
+  - Combines sequencer, driver, and input monitor
+  - Connects sequencer to driver
 
+- **apb_passive_agent**:
+  - Contains output monitor for passive observation
+
+- **apb_environment**:
+  - Instantiates all components
+  - Connects monitors to scoreboard and coverage
+
+- **apb_test**:
+  - Extends `uvm_test`
+  - Instantiates environment
+  - Verifies component topology and simulation errors
+
+- **apb_top**:
+  - Top-level module
+  - Includes interface, clock/reset generation, DUT instantiation, and `run_test`
+
+- **apb_interface**:
+  - Defines signal directions and timing
+  - Uses clocking blocks and modports
+
+---
+
+### Testbench Architecture
+
+![Testbench Architecture](https://github.com/user-attachments/assets/31df5542-50d1-4151-8752-db0ff9d3bf71)
+
+---
+
+## Test Plan and Assertion Plan
+
+📄 [View Testplan and Assertion Check](https://mirafra2-my.sharepoint.com/:x:/g/personal/veekshith_mirafra2_onmicrosoft_com/EQ9lHgIEmoJJspysDBPWxYsBIu3jHNXXsLYQ7CRgZTZqTw?e=NKFdfw)
+
+---
+
+## How to Run the Code
+
+### Compile the Testbench
+```bash
+vlog <testbench_file.v>
